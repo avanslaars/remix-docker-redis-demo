@@ -4,7 +4,9 @@ let _client: any = null
 let _isConnected = false
 
 function createRedisClient() {
-  const client = createClient()
+  const client = createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+  })
   client.on('connect', () => {
     _isConnected = true
   })

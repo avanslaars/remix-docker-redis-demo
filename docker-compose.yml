@@ -1,12 +1,44 @@
 services:
   redis:
     image: redislabs/redismod
+    profiles: ['dev']
     container_name: redis
     restart: always
     ports:
       - '6379:6379'
     volumes:
       - cache:/data
+  redis-cy:
+    image: redislabs/redismod
+    profiles: ['e2e']
+    restart: always
+    ports:
+      - '6379:6379'
+    # remove this once things are working. Instead of this, add a command to seed the database
+    volumes:
+      - cache:/data
+  web-cy:
+    build: .
+    profiles: ['e2e']
+    depends_on:
+      - redis-cy
+    restart: always
+    ports:
+      - '80:3000'
+    environment:
+      - REDIS_URL=redis://redis-cy:6379
+  cypress:
+    image: docker.io/library/cypress:m1
+    profiles: ['e2e']
+    depends_on:
+      - web-cy
+    working_dir: /cypress
+    environment:
+      - CYPRESS_BASE_URL=http://web-cy:3000
+    command: npx cypress run
+    volumes:
+      - ./:/cypress
+      - ./cypress.json:/cypress.json
 volumes:
   cache:
     driver: local
