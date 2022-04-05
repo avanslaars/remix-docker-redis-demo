@@ -39,7 +39,7 @@ export default function Index() {
   const { stuff } = useLoaderData()
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', lineHeight: '1.4' }}>
-      <h1>Welcome to Remix</h1>
+      <h1>Welcome to Remix 🎉</h1>
       {/* The 405 status messed me up here. An index route posting to itself needs this ?index in the action or it won't work */}
       <Form method="post" action="?index">
         <div>

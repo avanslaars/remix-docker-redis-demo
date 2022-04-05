@@ -8,12 +8,29 @@ services:
       - '6379:6379'
     volumes:
       - cache:/data
+  web:
+    build: .
+    profiles: ['dev']
+    depends_on:
+      - redis
+    restart: always
+    ports:
+      - '3000:3000'
+      - '8002:8002' # for the live reload websocket
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - ./:/usr/server/app
+      - /usr/server/app/node_modules
+    command: npm run dev
   redis-cy:
     image: redislabs/redismod
     profiles: ['e2e']
     restart: always
     ports:
       - '6379:6379'
+    entrypoint: './redis-seed.sh'
     # remove this once things are working. Instead of this, add a command to seed the database
     volumes:
       - cache:/data
